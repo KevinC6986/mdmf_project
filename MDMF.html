@@ -407,13 +407,22 @@
     document.getElementById('agreementBadge').className = 'text-xs font-medium ' +
       (agree ? 'text-emerald-600' : 'text-amber-600');
 
-    const verdict = data.consensus_label.toUpperCase();
-    const color = data.consensus_label === 'fake' ? 'text-rose-600' : 'text-emerald-600';
+    const label = data.consensus_label;
     const consensusEl = document.getElementById('consensusText');
-    consensusEl.textContent = `${verdict} — ${data.score_percent.toFixed(1)}% AI likelihood`;
-    consensusEl.className = `text-2xl font-bold mb-1 ${color}`;
-    document.getElementById('consensusSub').textContent =
-      `Averaged across both MDMF variants.`;
+    const consensusSubEl = document.getElementById('consensusSub');
+
+    if (label === 'unsure') {
+      consensusEl.textContent = 'UNSURE — variants disagree';
+      consensusEl.className = 'text-2xl font-bold mb-1 text-amber-600';
+      consensusSubEl.textContent =
+        'The two MDMF variants reached different conclusions on this image. See individual results below.';
+    } else {
+      const verdict = label.toUpperCase();
+      const color = label === 'fake' ? 'text-rose-600' : 'text-emerald-600';
+      consensusEl.textContent = `${verdict} — ${data.score_percent.toFixed(1)}% AI likelihood`;
+      consensusEl.className = `text-2xl font-bold mb-1 ${color}`;
+      consensusSubEl.textContent = 'Averaged across both MDMF variants.';
+    }
 
     for (const name of ['imagenet', 'sdv14']) {
       const entry = v[name];
